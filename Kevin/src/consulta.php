@@ -1,40 +1,39 @@
 <?php
 require_once("../src/connectDB.php");
+require_once("../src/repository/ConsultorRepository.php");
 require_once("../src/repository/Certifica_EmitidoRepository.php");
+require_once("../src/services/ConsultorService.php");
+require_once("../src/services/Certifica_EmitidoService.php");
 
 
 // Verifica si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtiene el valor del campo de entrada
+    // DATOS DEL FORMULARIO
     $inpConsul_name = $_POST['name_consultor'];
     $inpConsul_email = $_POST['email'];
     $inpConsul_empresa = $_POST['empresa'];
 
     $inpCert_name = $_POST['name'];
     $inpCert_numberReg = $_POST['certificado'];
-    echo "<br>" . $inpConsul_name . " " . $inpConsul_email . " " . $inpConsul_empresa;
-    echo "<br>" . "<h1>Certificado</h1>";
-    echo $inpCert_name . " " . $inpCert_numberReg;
 
-    // Aquí puedes realizar la lógica de búsqueda en la base de datos
+    // INSTANCIAR REPOSITORIOS
+    $repoConsultor = new ConsultorRepository($pdo);
     $repoCertificado = new Certifica_EmitidoRepository($pdo);
-    $entityCertificado = $repoCertificado->getCertificadoEmitido($inpCert_numberReg);
-    echo "<br>";
-    var_dump ($entityCertificado->showDate());
 
-    // // Prepara la consulta SQL
-    // $stmt = $pdo->prepare("SELECT * FROM dv_vc WHERE nombre LIKE :inputValue");
-    // $stmt->execute(['inputValue' => '%' . $inputValue . '%']);
+    //INSTANCIAR SERVICIOS
+    $serviceConsultor = new ConsultorService($repoConsultor);
+    $serviceCertificado = new Certifica_EmitidoService($repoCertificado);
 
-    // // Obtiene los resultados
-    // $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // // Muestra los resultados
-    // if ($results) {
-    //     foreach ($results as $row) {
-    //         echo "<p>" . htmlspecialchars($row['nombre']) . "</p>";
-    //     }
-    // } else {
-    //     echo "<p>No se encontraron resultados.</p>";
-    // }
+    // Aquí puedes realizar la lógica de búsqueda del consultor en la base de datos
+    if($serviceConsultor->validationData($inpConsul_name, $inpConsul_email, $inpConsul_empresa)){
+        echo "<br>" . "entro al IF del CONSULTOR";
+    }
+    if ($serviceCertificado->validationData($inpCert_name, $inpCert_numberReg)){
+        echo "<br>" . "entro al IF del CERTIFICADO";
+
+    }
+
+    // Aquí puedes realizar la lógica de búsqueda  del certificado en la base de datos
+    $entityCertificado = $repoCertificado->findByNumRegisCertificado($inpCert_numberReg);
 }
