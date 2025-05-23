@@ -5,6 +5,7 @@ class ConsultorService
     public function __construct($repository){
         $this->repository = $repository;
     }
+    //! Colocar Exception para el caso de que no se encuentre el consultor
     public function validationData($name, $email, $empresa){
         $consultorData = $this->repository->findByEmail($email);
         $name = preg_split('/\s+/', $this->removeAccents(strtolower($name)));

@@ -5,6 +5,9 @@ require_once("../src/repository/Certifica_EmitidoRepository.php");
 require_once("../src/services/ConsultorService.php");
 require_once("../src/services/Certifica_EmitidoService.php");
 
+require ('../vendor/autoload.php');
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 // Verifica si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -25,15 +28,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $serviceCertificado = new Certifica_EmitidoService($repoCertificado);
 
 
-    // Aquí puedes realizar la lógica de búsqueda del consultor en la base de datos
+    // Aquí realizar la lógica de la búsqueda del consultor y certificado en la base de datos
     if($serviceConsultor->validationData($inpConsul_name, $inpConsul_email, $inpConsul_empresa)){
-        echo "<br>" . "entro al IF del CONSULTOR";
+        if ($serviceCertificado->validationData($inpCert_name, $inpCert_numberReg)){
+            echo "Hemos recibido su solicitud con éxito, pronto recibirá un correo en la dirección facilitada con los resultados de su consulta<br>";
+        }
+        else {
+            echo "Error: No se encontró el certificado";
+        }
+    }else{
+        echo "Error: No se encontró el consultor";
     }
-    if ($serviceCertificado->validationData($inpCert_name, $inpCert_numberReg)){
-        echo "<br>" . "entro al IF del CERTIFICADO";
+    
 
+    $email = new PHPMailer(true);
+
+    try{
+        $email->isSMTP();
+        $email->Host = 'smtp.gmail.com';
+        $email->SMTPAuth = true;
+        $email->Username = 'kevsneos@gmail.com';
+        $email->Password = 'slayfer719';
+        $email->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $email->Port = 587;
+
+
+        $email->setFrom('kevsneos@gmail.com','Kevin David Quispe');
+        $email->addAddress($inpConsul_email, $inpConsul_name);
+
+        $email->isHTML(true);
+        $email->Subject = 'Tu Certificado esta disponible';
+        $email->Body = "<p>Hola <b>$inpConsul_name</b>, tu certificado de la empresa <b>$inpConsul_empresa</b> está disponible.</p>";
+        $email->AltBody = "Hola $inpCert_name, tu certificado de la empresa $inpConsul_empresa está disponible con numero de registro $inpCert_numberReg";
+
+        $email->send();
+        echo "El correo ha sido enviado correctamente a $inpConsul_email";
     }
-
-    // Aquí puedes realizar la lógica de búsqueda  del certificado en la base de datos
-    $entityCertificado = $repoCertificado->findByNumRegisCertificado($inpCert_numberReg);
+    catch(Exception $e){
+        echo "Error al enviar el correo: {$email->ErrorInfo}";
+    };
 }
