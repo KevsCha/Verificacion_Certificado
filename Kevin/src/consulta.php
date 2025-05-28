@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error: No se encontró el consultor";
     }
 
-    echo "\nENTRANDO A ENVIAR CORREO\n";
+    echo "\nENTRANDO A ENVIAR CORREO\n\n";
 
     $credentials = getCredentials();
     $tokenData = json_decode(file_get_contents(__DIR__ . '/config/token.json'), true);
@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         "Hola $inpCert_name, tu certificado de la empresa $inpConsul_empresa está disponible con numero de registro $inpCert_numberReg")){
             echo "El correo ha sido enviado correctamente a $inpConsul_email";
     }else
-        echo "\nError al enviar el correo a $inpConsul_email\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        echo "\n\n\nError al enviar el correo a $inpConsul_email\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     
     
 }

@@ -37,7 +37,18 @@ echo "Código: ";
 $code = trim(fgets(STDIN));
 $code = urldecode($code);
 
-$token = $provider->getAccessToken('authorization_code', ['code' => $code]);
+//$token = $provider->getAccessToken('authorization_code', ['code' => $code]);
+
+try {
+    $token = $provider->getAccessToken('authorization_code', ['code' => $code]);
+    $owner = $provider->getResourceOwner($token);
+    echo "-----------------Email autorizado por el token: " . $owner->toArray()['email'] . "\n";
+    if (!$token->getRefreshToken()) {
+        echo "No se recibió un refresh token. Asegúrate de autorizar completamente la app o borra el acceso desde tu cuenta de Google.\n";
+    }
+} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+    exit("Error al obtener el token: " . $e->getMessage());
+}
 
 
 echo "\nAccess Token: " . $token->getToken() . "\n";

@@ -35,8 +35,8 @@ class SendEmail{
         
         $this->mailer->isSMTP();
         $this->mailer->Host = 'smtp.gmail.com';
-        $this->mailer->Port = 465;
-        $this->mailer->SMTPSecure = 'ssl';
+        $this->mailer->Port = 587;
+        $this->mailer->SMTPSecure = 'tls';
         $this->mailer->SMTPAuth = true;
         $this->mailer->AuthType = 'XOAUTH2';
 
@@ -49,77 +49,56 @@ class SendEmail{
             'scope' => ['https://mail.google.com/']
         ]);
 
-        // try {
-        //     $accessToken = $provider->getAccessToken('refresh_token', [
-        //         'refresh_token' => $this->oauthRefreshToken
-        //     ]);
-        //     echo "Access token válido: " . $accessToken->getToken();
-        // } catch (Exception $e) {
-        //     echo "Error al refrescar el token: " . $e->getMessage();
-        // }
+        $accessTokenObject = $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $this->oauthRefreshToken
+        ]);
+
+        $this->oauthAccessToken = $accessTokenObject->getToken(); // lo guardas para usarlo más abajo (como en buildOAuthString)
+        echo "------------Nuevo access_token obtenido desde refresh_token: " . $this->oauthAccessToken . "\n";
 
         $this->mailer->setOAuth(new OAuth([
                 'provider' => $provider,
                 'clientId' => $this->oauthClientId,
                 'clientSecret' => $this->oauthClientSecret,
                 'refreshToken' => $this->oauthRefreshToken,
-                'userName' => $this->oauthUserEmail
+                'userName' => $this->oauthUserEmail,
+                'accessToken' => $this->oauthAccessToken
             ]));
-
+            
+        
     }
     public function sendCertificateEmail($toMail, $name, $subject, $htmlContent, $textContent) {
         try{
-            $this->mailer->setFrom('kevsneos@gmail.com','Kevin David Quispe');
-            $this->mailer->addAddress('kevsneos@gmail.com', 'Kevin Quispe DESTINY');
+            $this->mailer->setFrom($this->oauthUserEmail,'Kevin David Quispe');
+            $this->mailer->addAddress($this->oauthUserEmail, 'Kevin Quispe DESTINY');
 
             $this->mailer->isHTML(true);
             $this->mailer->Subject = $subject;
             $this->mailer->Body = $htmlContent;
             $this->mailer->AltBody = $textContent;
 
+
+
+            echo "\n\n\nMas detalles del debug:\n\n";
+            $this->mailer->SMTPDebug = 3; // O 3 para más detalles 
+            $this->mailer->Debugoutput = 'html'; // O 'echo' si estás en CLI
+
+
+
+            $test = $this->buildOAuthString($this->oauthUserEmail, $this->oauthAccessToken);
+            echo "\n\n\n------------Test de OAuth String:". base64_decode($test) ."\n\n";
+
+
+
             $this->mailer->send();
             return true;
         }catch(Exception $e){
-            echo "Error al enviar el correo: {$this->mailer->ErrorInfo}";
+            echo "\n\n\nError al enviar el correo: {$this->mailer->ErrorInfo}";
             echo "\nError: " . $e->getMessage();
             return false;
         }
     }
+    public function buildOAuthString($email, $accessToken) {
+        return base64_encode("user=$email\x01auth=Bearer $accessToken\x01\x01");
+    }
 }
-
-// function sendEmail($toMail, $name, $subject, $htmlContent, $textContent) {
-//     $credentials = getCredentials();
-//     $clientId = $credentials['client_id'];
-//     $clientSecret = $credentials['client_secret'];
-//     $token = getToken();
-
-
-//     $email = new PHPMailer(true);
-
-
-
-//     $email->isSMTP();
-//     $email->Host = 'smtp.gmail.com';
-//     $email->Port = 587;
-//     $email->SMTPSecure = 'tls';
-//     $email->SMTPAuth = true;
-//     $email->AuthType = 'XOAUTH2';
-
-//     $email->oauthUserEmail = 'kevsneos@gmail.com';
-//     $email->oauthClientId = $clientId;
-//     $email->oauthClientSecret = $clientSecret;
-//     $email->oauthRefreshToken = 'tu-refresh-token'; // si lo tienes, si no puedes probar con Access Token
-//     $email->oauthAccessToken = $token;
-
-    
-//     $email->setFrom('kevsneos@gmail.com','Kevin David Quispe');
-//     $email->addAddress($toMail, $name);
-
-//     $email->isHTML(true);
-//     $email->Subject = $subject;
-//     $email->Body = $htmlContent;
-//     $email->AltBody = $textContent;
-
-//     $email->send();
-  
-// }
