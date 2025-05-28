@@ -7,7 +7,7 @@ document.getElementById("form").addEventListener("submit", function(e) {
 		body: formData
 	}).then(res => res.text())
 	.then(data => {
-		alert(data);
+		console.log(data);
 	})
 	.catch(err => {
 		console.error(err);

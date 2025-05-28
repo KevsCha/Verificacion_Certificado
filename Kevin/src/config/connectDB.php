@@ -1,5 +1,5 @@
 <?php
-$host = '127.0.0.1';
+$host = 'localhost';
 $db   = 'db_vc';
 $user = 'root';
 $pass = 'contrasena';

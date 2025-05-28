@@ -1,5 +1,5 @@
 <?php
-require_once("../src/config/connectDB.php");
+require_once("config/connectDB.php");
 require_once("./config/getCredentials.php");
 
 require_once("../src/repository/ConsultorRepository.php");

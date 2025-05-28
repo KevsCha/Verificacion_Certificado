@@ -29,8 +29,8 @@ CREATE TABLE historial_consultas (
     fecha_consulta DATETIME DEFAULT CURRENT_TIMESTAMP,
     resultado ENUM('valido', 'caducado', 'no_encontrado') NOT NULL,
 
-    FOREIGN KEY (id_consultor) REFERENCES Consultores(id),
-    FOREIGN KEY (id_certificado) REFERENCES Certificados(id)
+    FOREIGN KEY (id_consultor) REFERENCES consultores(id),
+    FOREIGN KEY (id_certificado) REFERENCES certificados_emitidos(id)
 );
 
 -- DATOS -----------------------------------------
