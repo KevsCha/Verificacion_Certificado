@@ -1,5 +1,5 @@
 <?php
-require_once("config/connectDB.php");
+require_once("../src/config/connectDB.php");
 require_once("./config/getCredentials.php");
 
 require_once("../src/repository/ConsultorRepository.php");
@@ -45,10 +45,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     echo "\nENTRANDO A ENVIAR CORREO\n\n";
 
+    //?--------------------OJO
     $credentials = getCredentials();
     $tokenData = json_decode(file_get_contents(__DIR__ . '/config/token.json'), true);
 
     $mailClass = new SendEmail($credentials, $tokenData);
+
+    
     if($mailClass->sendCertificateEmail($inpConsul_email, $inpConsul_name, 
         'Tu certificado está disponible', 
         "<p>Hola <b>$inpConsul_name</b>, tu certificado de la empresa <b>$inpConsul_empresa</b> está disponible.</p>", 

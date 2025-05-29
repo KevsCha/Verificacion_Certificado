@@ -25,8 +25,8 @@ class SendEmail{
         $this->oauthClientId = $credentials['client_id'];
         $this->oauthClientSecret = $credentials['client_secret'];
         $this->oauthClientUri = $credentials['redirect_uris'][0];
-        $this->oauthRefreshToken = $tokenData['refresh_token'] ?? null;
         $this->oauthAccessToken = $tokenData['access_token'] ?? null;
+        $this->oauthRefreshToken = $tokenData['refresh_token'] ?? null;
 
         $this->mailer = new PHPMailer(true);
         $this->setUpEmail();

@@ -20,34 +20,34 @@ $provider = new Google(
         'clientId' => $clientId,
         'clientSecret' => $clientSecret,
         'redirectUri' => $clientUri,
-        'accessType' => 'offline',
-        'scope' => ['https://mail.google.com/']
+        'accessType' => 'offline'
     ]    
 );
 
 $options = [
     'access_type' => 'offline',
-    'prompt' => 'consent'
+    'prompt' => 'consent',
+    'scope' => ['https://mail.google.com/']
 ];
 
 $authUrl = $provider->getAuthorizationUrl($options);
 
 echo "Visita esta URL y pega el código aquí:\n$authUrl\n";
 echo "Código: ";
-$code = trim(fgets(STDIN));
-$code = urldecode($code);
+$code = urldecode(trim(fgets(STDIN)));
 
 //$token = $provider->getAccessToken('authorization_code', ['code' => $code]);
 
 try {
     $token = $provider->getAccessToken('authorization_code', ['code' => $code]);
-    $owner = $provider->getResourceOwner($token);
-    echo "-----------------Email autorizado por el token: " . $owner->toArray()['email'] . "\n";
+    
+    //$owner = $provider->getResourceOwner($token);
+    //echo "-----------------Email autorizado por el token: " . $owner->toArray()['email'] . "\n";
     if (!$token->getRefreshToken()) {
         echo "No se recibió un refresh token. Asegúrate de autorizar completamente la app o borra el acceso desde tu cuenta de Google.\n";
     }
 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-    exit("Error al obtener el token: " . $e->getMessage());
+    exit("----------00000------Error al obtener el token: " . $e->getMessage());
 }
 
 
