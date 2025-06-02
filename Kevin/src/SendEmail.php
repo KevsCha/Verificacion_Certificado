@@ -49,12 +49,21 @@ class SendEmail{
             'scope' => ['https://mail.google.com/']
         ]);
 
+
+        echo "\n-----------Actual access_token desde refresh_token...\n";
+        echo "-------------Access Token:\n" . $this->oauthAccessToken . "\n";
+        // echo $this->oauthAccessToken == $provider->getAccessToken('refresh_token', [
+        //     'refresh_token' => $this->oauthRefreshToken
+        // ])? "El access token es el mismo que el actual.\n" : "El access token ha cambiado.\n";
+        echo "token del provider: \n" . $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $this->oauthRefreshToken
+        ]). "\n";
         $accessTokenObject = $provider->getAccessToken('refresh_token', [
             'refresh_token' => $this->oauthRefreshToken
         ]);
 
         $this->oauthAccessToken = $accessTokenObject->getToken(); // lo guardas para usarlo más abajo (como en buildOAuthString)
-        echo "------------Nuevo access_token obtenido desde refresh_token: " . $this->oauthAccessToken . "\n";
+        echo "\n------------Nuevo access_token obtenido desde refresh_token: " . $this->oauthAccessToken . "\n";
 
         $this->mailer->setOAuth(new OAuth([
                 'provider' => $provider,
@@ -70,25 +79,22 @@ class SendEmail{
     public function sendCertificateEmail($toMail, $name, $subject, $htmlContent, $textContent) {
         try{
             $this->mailer->setFrom($this->oauthUserEmail,'Kevin David Quispe');
-            $this->mailer->addAddress($this->oauthUserEmail, 'Kevin Quispe DESTINY');
+            $this->mailer->addAddress("quispekevin49@gmail.com", $name.' DESTINY');
 
             $this->mailer->isHTML(true);
             $this->mailer->Subject = $subject;
-            $this->mailer->Body = $htmlContent;
+            $this->mailer->Body = $textContent;
             $this->mailer->AltBody = $textContent;
 
 
 
-            echo "\n\n\nMas detalles del debug:\n\n";
+            //echo "\n\n\nMas detalles del debug:\n\n";
             $this->mailer->SMTPDebug = 3; // O 3 para más detalles 
             $this->mailer->Debugoutput = 'html'; // O 'echo' si estás en CLI
 
 
-
             $test = $this->buildOAuthString($this->oauthUserEmail, $this->oauthAccessToken);
             echo "\n\n\n------------Test de OAuth String:". base64_decode($test) ."\n\n";
-
-
 
             $this->mailer->send();
             return true;

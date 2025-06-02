@@ -7,6 +7,7 @@ require_once("../src/repository/Certifica_EmitidoRepository.php");
 require_once("../src/services/ConsultorService.php");
 require_once("../src/services/Certifica_EmitidoService.php");
 require_once("./SendEmail.php");
+require_once("./config/getToken.php");
 
 require ('../vendor/autoload.php');
 use PHPMailer\PHPMailer\PHPMailer;
@@ -45,9 +46,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     echo "\nENTRANDO A ENVIAR CORREO\n\n";
 
+
+
+
+
+
     //?--------------------OJO
     $credentials = getCredentials();
-    $tokenData = json_decode(file_get_contents(__DIR__ . '/config/token.json'), true);
+    $tokenData = getToken();
+    if (!tokenInvalid($tokenData))
+        echo "\nToken válido, continuando con el envío de correo...\n";
+    else
+        echo "\nToken inválido o no encontrado, se requiere autenticación.\n";
+
 
     $mailClass = new SendEmail($credentials, $tokenData);
 
@@ -57,8 +68,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         "<p>Hola <b>$inpConsul_name</b>, tu certificado de la empresa <b>$inpConsul_empresa</b> está disponible.</p>", 
         "Hola $inpCert_name, tu certificado de la empresa $inpConsul_empresa está disponible con numero de registro $inpCert_numberReg")){
             echo "El correo ha sido enviado correctamente a $inpConsul_email";
+
     }else
         echo "\n\n\nError al enviar el correo a $inpConsul_email\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
     
     
 }
