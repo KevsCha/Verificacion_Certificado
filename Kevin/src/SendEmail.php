@@ -16,6 +16,7 @@ class SendEmail{
     private $oauthClientUri;
     private $oauthRefreshToken;
     private $oauthAccessToken;
+    private $oauthAccessTokenExpires;
     private $mailer;
 
 
@@ -27,6 +28,7 @@ class SendEmail{
         $this->oauthClientUri = $credentials['redirect_uris'][0];
         $this->oauthAccessToken = $tokenData['access_token'] ?? null;
         $this->oauthRefreshToken = $tokenData['refresh_token'] ?? null;
+        $this->oauthAccessTokenExpires = $tokenData['expires'] ?? null;
 
         $this->mailer = new PHPMailer(true);
         $this->setUpEmail();
@@ -50,20 +52,27 @@ class SendEmail{
         ]);
 
 
-        echo "\n-----------Actual access_token desde refresh_token...\n";
-        echo "-------------Access Token:\n" . $this->oauthAccessToken . "\n";
-        // echo $this->oauthAccessToken == $provider->getAccessToken('refresh_token', [
-        //     'refresh_token' => $this->oauthRefreshToken
-        // ])? "El access token es el mismo que el actual.\n" : "El access token ha cambiado.\n";
-        echo "token del provider: \n" . $provider->getAccessToken('refresh_token', [
-            'refresh_token' => $this->oauthRefreshToken
-        ]). "\n";
-        $accessTokenObject = $provider->getAccessToken('refresh_token', [
-            'refresh_token' => $this->oauthRefreshToken
-        ]);
 
-        $this->oauthAccessToken = $accessTokenObject->getToken(); // lo guardas para usarlo más abajo (como en buildOAuthString)
-        echo "\n------------Nuevo access_token obtenido desde refresh_token: " . $this->oauthAccessToken . "\n";
+        if (tokenInvalid($this->oauthAccessTokenExpires)){
+            // echo "\nToken inválido o no encontrado, se requiere autenticación.\n";
+
+            // echo "-------------Access Token Expirado:\n" . $this->oauthAccessToken . "\n";
+            // $accessTokenObject = $provider->getAccessToken('refresh_token', [
+            //     'refresh_token' => $this->oauthRefreshToken
+            // ]);
+            // echo "\n------------Nuevo access_token obtenido desde refresh_token:\n" . $accessTokenObject->getToken() . "\n";
+            // $this->oauthAccessToken = $accessTokenObject->getToken(); 
+            // $this->oauthAccessTokenExpires = $accessTokenObject->getExpires();
+            // echo "\n------------Nuevo access_token EXPIRA:\n" . $this->oauthAccessTokenExpires . "\n";
+            // file_put_contents('./config/token.json', json_encode([
+            //     'access_token' => $this->oauthAccessToken,
+            //     'refresh_token' => $this->oauthRefreshToken,
+            //     'expires' => $this->oauthAccessTokenExpires
+            // ]));
+            $this->saveNewToken($provider);
+        }
+        else
+            echo "\nToken válido, continuando con el envío de correo...\n";
 
         $this->mailer->setOAuth(new OAuth([
                 'provider' => $provider,
@@ -104,7 +113,24 @@ class SendEmail{
             return false;
         }
     }
-    public function buildOAuthString($email, $accessToken) {
+    private function buildOAuthString($email, $accessToken) {
         return base64_encode("user=$email\x01auth=Bearer $accessToken\x01\x01");
+    }
+    private function saveNewToken($provider){
+        echo "\nToken inválido o no encontrado, se requiere autenticación.\n";
+
+        echo "-------------Access Token Expirado:\n" . $this->oauthAccessToken . "\n";
+        $accessTokenObject = $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $this->oauthRefreshToken
+        ]);
+        echo "\n------------Nuevo access_token obtenido desde refresh_token:\n" . $accessTokenObject->getToken() . "\n";
+        $this->oauthAccessToken = $accessTokenObject->getToken(); 
+        $this->oauthAccessTokenExpires = $accessTokenObject->getExpires();
+        echo "\n------------Nuevo access_token EXPIRA:\n" . $this->oauthAccessTokenExpires . "\n";
+        file_put_contents('./config/token.json', json_encode([
+            'access_token' => $this->oauthAccessToken,
+            'refresh_token' => $this->oauthRefreshToken,
+            'expires' => $this->oauthAccessTokenExpires
+        ]));
     }
 }

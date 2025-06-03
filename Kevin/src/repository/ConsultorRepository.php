@@ -48,4 +48,14 @@ class ConsultorRepository{
         }
         return null;
     }
+    public function findIdByEmail($email){
+        $stmt = $this->pdo->prepare("SELECT id FROM consultores WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            return $row['id'];
+        }
+        return null;
+    }
 }
