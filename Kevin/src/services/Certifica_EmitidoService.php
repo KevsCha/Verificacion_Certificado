@@ -5,11 +5,26 @@ class Certifica_EmitidoService{
         $this->repository = $repository;
     }
     //! Colocar Exception para el caso de que no se encuentre el certificado
-    public function validationData($name, $num_certificado){
+    public function validationData($nameForm, $num_certificado){
+        //TODO: Lanza error si el certificado no existe
+        //TODO: Validar que el numero de certificado sea correcto
         $certificadoData = $this->repository->findByNumRegisCertificado($num_certificado);
-        $name = preg_split('/\s+/', $this->removeAccents(strtolower($name)));
+        $nameForm = preg_split('/\s+/', $this->removeAccents(strtolower($nameForm)));
 
-        if($name[0] == $this->removeAccents(strtolower($certificadoData->getName())) && $name[1]== $this->removeAccents(strtolower($certificadoData->getLastName())) && $num_certificado == $certificadoData->getNumCertificado()){
+        echo "--------------VALIDANDO CERTIFICADO----------------\n";
+        echo "\n";
+        var_dump($certificadoData);
+        echo "\n";
+        echo "Nombre Formulario: " . $nameForm[0] . "\n";
+        echo "Apellido Formulario: ". $nameForm[1]."\n";
+        echo "Numero de certificado Formulario: " . $num_certificado . "\n";
+        echo "-----Conversion de nombre y apellido a minusculas y sin acentos-----\n";
+        $nameDDBB = $this->removeAccents(strtolower($certificadoData->getName()));
+        $last_nameDDBB = $this->removeAccents(strtolower($certificadoData->getLastName()));
+        echo "Nombre Certificado DDBB: " . $nameDDBB . "\n";
+        echo "Apellido Certificado DDBB: " . $last_nameDDBB . "\n";
+
+        if($nameForm[0] == $nameDDBB && $nameForm[1] == $last_nameDDBB && $num_certificado == $certificadoData->getNumCertificado()){
             return true;
         }
         return false;

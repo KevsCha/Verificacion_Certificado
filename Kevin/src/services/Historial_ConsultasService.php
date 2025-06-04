@@ -15,10 +15,12 @@ class Historial_ConsultasService{
         $idConsultor = $this->consultorRepository->findIdByEmail($consultor_email);
         $idCertificado = $this->certificadoRepository->findIdByNumRegisCertificado($certificado_num_regis);
         $resultado = false;
-        if(!$idConsultor || !$idCertificado)
+        if(!$idConsultor || !$idCertificado){
+            $resultado = 'no_encontrado';
             throw new Exception("Consultor o certificado no encontrado");
+        }
         else
-            $resultado = 'Consulta realizada con éxito';
+            $resultado = 'valido';
         return $this->repository->save($idConsultor, $idCertificado, $resultado);
     }
 
