@@ -39,7 +39,8 @@ CREATE TABLE historial_consultas (
 INSERT INTO consultores (nombre, apellido, empresa, email) VALUES
 ('Laura', 'Gómez', 'SeguridadGlobal S.A.', 'laura.gomez@seguridadglobal.com'),
 ('Carlos', 'Mendoza', 'ProtecVisión Ltda.', 'carlos.mendoza@proteccion.com'),
-('Ana', 'Ruiz', 'VigilanciaTech', 'ana.ruiz@vigilancia.com');
+('Ana', 'Ruiz', 'VigilanciaTech', 'ana.ruiz@vigilancia.com'),
+('Kevin', 'Quispe', 'MalvadosAsociados', 'quispekevin49@gmail.com');
 
 -- CERTIFICADOS
 INSERT INTO certificados_emitidos (nombre, apellido, num_regis_certificado) VALUES
