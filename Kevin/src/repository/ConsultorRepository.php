@@ -25,7 +25,7 @@ class ConsultorRepository{
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$row)
-            throw new NotFoundException("Consultor con id $id no encontrado");
+            throw new NotFoundException("Consultor con id ".$id." no encontrado");
         return new Consultores($row['id'], $row['nombre'], $row['apellido'], $row['empresa'], $row['email']);
     }
     public function findByName($name){
@@ -33,10 +33,10 @@ class ConsultorRepository{
         $stmt->execute(['nombre' => $name]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($row) {
-            return new Consultores($row['id'], $row['nombre'], $row['apellido'], $row['empresa'], $row['email']);
+        if (!$row) {
+            throw new NotFoundException("Consultor con nombre ".$name." no encontrado");
         }
-        return null;
+        return new Consultores($row['id'], $row['nombre'], $row['apellido'], $row['empresa'], $row['email']);
     }
     public function findByEmail($email){
         $stmt = $this->pdo->prepare("SELECT * FROM consultores WHERE email = :email");
@@ -44,7 +44,7 @@ class ConsultorRepository{
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$row)
-            throw new NotFoundException("Consultor con email $email no encontrado");
+            throw new NotFoundException("Consultor con email ".$email." no encontrado");
         return new Consultores($row['id'], $row['nombre'], $row['apellido'], $row['empresa'], $row['email']);
     }
     public function findIdByEmail($email){

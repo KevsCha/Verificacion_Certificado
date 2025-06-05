@@ -38,27 +38,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $serviceConsultor = new ConsultorService($repoConsultor);
         $serviceCertificado = new Certifica_EmitidoService($repoCertificado);
 
-
+        //echo "\n\n-------------------VALIDANDO CONSULTOR Y CERTIFICADO-------------------\n\n";
         // Aquí realizar la lógica de la búsqueda del consultor y certificado en la base de datos
-        if($serviceConsultor->validationData($inpConsul_name, $inpConsul_email, $inpConsul_empresa)){
-            if ($serviceCertificado->validationData($inpCert_name, $inpCert_numberReg)){
-                echo "Hemos recibido su solicitud con éxito, pronto recibirá un correo en la dirección facilitada con los resultados de su consulta<br>";
-            }
-            else {
-                echo "Error: No se encontró el certificado";
-            }
-        }else{
-            echo "Error: No se encontró el consultor o uno de los datos es incorrecto";
-        }
-
+        // if($serviceConsultor->validationData($inpConsul_name, $inpConsul_email, $inpConsul_empresa)){
+        //     if ($serviceCertificado->validationData($inpCert_name, $inpCert_numberReg)){
+        //         echo "Hemos recibido su solicitud con éxito, pronto recibirá un correo en la dirección facilitada con los resultados de su consulta<br>";
+        //     }
+        //     else {
+        //         echo "Error: No se encontró el certificado";
+        //     }
+        // }else{
+        //     echo "Error: No se encontró el consultor o uno de los datos es incorrecto";
+        // }
+        $serviceConsultor->validationData($inpConsul_name, $inpConsul_email, $inpConsul_empresa);
+        $serviceCertificado->validationData($inpCert_name, $inpCert_numberReg);
         // if (!$serviceConsultor->validationData($inpConsul_name, $inpConsul_email, $inpConsul_empresa))
         //     throw new Exception("Consultor no encontrado o datos incorrectos");
         // if (!$serviceCertificado->validationData($inpCert_name, $inpCert_numberReg))
         //     throw new Exception("Certificado no encontrado o datos incorrectos");
+        echo "Validación exitosa: Consultor y certificado encontrados.\n";
 
-
-
-        echo "\nENTRANDO A ENVIAR CORREO\n\n";
 
         //?--------------------OJO
         // $credentials = getCredentials();
@@ -76,14 +75,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // }else
         //     echo "\n\n\nError al enviar el correo a $inpConsul_email\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
-        // $repoHistorico = new Historial_ConsultasRepository($pdo);
+        //echo "\n\n--------------GUARDANDO CONSULTA EN HISTORIAL----------------\n\n";
+        $repoHistorico = new Historial_ConsultasRepository($pdo);
 
-        // $serviceHistorico = new Historial_ConsultasService($repoHistorico, $repoConsultor, $repoCertificado);    
-        // $serviceHistorico->saveConsulta($inpConsul_email, $inpCert_numberReg);
+        $serviceHistorico = new Historial_ConsultasService($repoHistorico, $repoConsultor, $repoCertificado);    
+        $serviceHistorico->saveConsulta($inpConsul_email, $inpCert_numberReg);
+
     }catch (ValidationException $e) {
         echo "Error de validación: " . $e->getMessage();
     }catch (NotFoundException $e) {
-        echo "Error de búsqueda: " . $e->getMessage();
+        echo"Error de búsqueda: " . $e->getMessage();
     }catch (PDOException $e) {
         die("Error de conexión: " . $e->getMessage());
     }catch (Exception $e) {

@@ -14,14 +14,18 @@ class Historial_ConsultasService{
 
         $idConsultor = $this->consultorRepository->findIdByEmail($consultor_email);
         $idCertificado = $this->certificadoRepository->findIdByNumRegisCertificado($certificado_num_regis);
+        $certficadoValidez = $this->certificadoRepository->findById($idCertificado);
         $resultado = false;
+
         if(!$idConsultor || !$idCertificado){
             $resultado = 'no_encontrado';
             throw new Exception("Consultor o certificado no encontrado");
         }
         else
-            $resultado = 'valido';
-        return $this->repository->save($idConsultor, $idCertificado, $resultado);
+            $resultado = $certficadoValidez->getFechaValidez() > date('Y-m-d') ? 'valido' : 'caducado';
+        echo "<br> Certificado: $resultado <br>";
+        $this->repository->save($idConsultor, $idCertificado, $resultado);
+        return true;
     }
 
     public function getConsultasByConsultorId($consultor_id){

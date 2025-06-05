@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../exceptions/ValidationException.php';
 class Certifica_EmitidoService{
     private $repository;
     public function __construct($repository){
@@ -11,23 +12,12 @@ class Certifica_EmitidoService{
         $certificadoData = $this->repository->findByNumRegisCertificado($num_certificado);
         $nameForm = preg_split('/\s+/', $this->removeAccents(strtolower($nameForm)));
 
-        echo "--------------VALIDANDO CERTIFICADO----------------\n";
-        echo "\n";
-        var_dump($certificadoData);
-        echo "\n";
-        echo "Nombre Formulario: " . $nameForm[0] . "\n";
-        echo "Apellido Formulario: ". $nameForm[1]."\n";
-        echo "Numero de certificado Formulario: " . $num_certificado . "\n";
-        echo "-----Conversion de nombre y apellido a minusculas y sin acentos-----\n";
         $nameDDBB = $this->removeAccents(strtolower($certificadoData->getName()));
         $last_nameDDBB = $this->removeAccents(strtolower($certificadoData->getLastName()));
-        echo "Nombre Certificado DDBB: " . $nameDDBB . "\n";
-        echo "Apellido Certificado DDBB: " . $last_nameDDBB . "\n";
-
-        if($nameForm[0] == $nameDDBB && $nameForm[1] == $last_nameDDBB && $num_certificado == $certificadoData->getNumCertificado()){
-            return true;
-        }
-        return false;
+        
+        if($nameForm[0] != $nameDDBB || $nameForm[1] != $last_nameDDBB)
+            throw new ValidationException("Los datos del certificado no coinciden con los de la base de datos. Por favor, verifique el nombre, apellido y número de certificado.");
+        return true;
     }
     private function removeAccents($str){
         $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
