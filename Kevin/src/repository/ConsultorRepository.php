@@ -43,8 +43,10 @@ class ConsultorRepository{
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$row)
-            throw new NotFoundException("Consultor con email ".$email." no encontrado");
+        if (!$row){
+            return null;
+            //throw new NotFoundException("Consultor con email ".$email." no encontrado");
+        }
         return new Consultores($row['id'], $row['nombre'], $row['apellido'], $row['empresa'], $row['email']);
     }
     public function findIdByEmail($email){
@@ -55,5 +57,27 @@ class ConsultorRepository{
         if (!$row)
             throw new NotFoundException('Id de consultor no encontrado para el email: ' . $email);
         return $row['id'];
+    }
+    public function save(Consultores $consultor){
+        $stmt = $this->pdo->prepare("INSERT INTO consultores (nombre, apellido, empresa, email) VALUES (:nombre, :apellido, :empresa, :email)");
+        $stmt->execute([
+            'nombre' => $consultor->getName(),
+            'apellido' => $consultor->getLastName(),
+            'empresa' => $consultor->getEmpresa(),
+            'email' => $consultor->getEmail()
+        ]);
+        return $this->pdo->lastInsertId();
+    }
+    public function update(Consultores $consultor){
+        $stmt = $this->pdo->prepare(
+            "UPDATE consultores SET nombre = :nombre, empresa = :empresa, email = :email WHERE id = :id");
+            echo "<br>Actualizando consultor: " . $consultor . "<br>";
+        
+        $stmt->execute([
+            'id' => $consultor->getId(),
+            'nombre' => $consultor->getName(),
+            'empresa' => $consultor->getEmpresa(),
+            'email' => $consultor->getEmail()
+        ]);
     }
 }

@@ -53,24 +53,8 @@ class SendEmail{
 
 
 
-        if (tokenInvalid($this->oauthAccessTokenExpires)){
-            // echo "\nToken inválido o no encontrado, se requiere autenticación.\n";
-
-            // echo "-------------Access Token Expirado:\n" . $this->oauthAccessToken . "\n";
-            // $accessTokenObject = $provider->getAccessToken('refresh_token', [
-            //     'refresh_token' => $this->oauthRefreshToken
-            // ]);
-            // echo "\n------------Nuevo access_token obtenido desde refresh_token:\n" . $accessTokenObject->getToken() . "\n";
-            // $this->oauthAccessToken = $accessTokenObject->getToken(); 
-            // $this->oauthAccessTokenExpires = $accessTokenObject->getExpires();
-            // echo "\n------------Nuevo access_token EXPIRA:\n" . $this->oauthAccessTokenExpires . "\n";
-            // file_put_contents('./config/token.json', json_encode([
-            //     'access_token' => $this->oauthAccessToken,
-            //     'refresh_token' => $this->oauthRefreshToken,
-            //     'expires' => $this->oauthAccessTokenExpires
-            // ]));
+        if (tokenInvalid($this->oauthAccessTokenExpires))
             $this->saveNewToken($provider);
-        }
         else
             echo "\nToken válido, continuando con el envío de correo...\n";
 

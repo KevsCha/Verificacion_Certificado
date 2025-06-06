@@ -24,7 +24,9 @@ class Historial_ConsultasService{
         else
             $resultado = $certficadoValidez->getFechaValidez() > date('Y-m-d') ? 'valido' : 'caducado';
         echo "<br> Certificado: $resultado <br>";
-        $this->repository->save($idConsultor, $idCertificado, $resultado);
+        echo date('Y-m-d H:i:s') . "<br>";
+        $historico = new Historial_Consultas(null, $idConsultor, $idCertificado, date('Y-m-d H:i:s'), $resultado);
+        $this->repository->save($historico);
         return true;
     }
 
