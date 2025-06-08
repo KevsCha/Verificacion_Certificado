@@ -81,4 +81,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Error: " . $e->getMessage());
     }
 }
+
+/*
+// Estilo para el mensaje de error
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    background-color: #f44336; /* rojo por defecto 
+    color: white;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 1000;
+    transition: opacity 0.3s;
+*/
  
