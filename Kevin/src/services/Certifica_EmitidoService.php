@@ -6,7 +6,6 @@ class Certifica_EmitidoService{
     public function __construct($repository){
         $this->repository = $repository;
     }
-    //! Colocar Exception para el caso de que no se encuentre el certificado
     public function validationData($nameForm, $num_certificado){
         $certificadoData = $this->repository->findByNumRegisCertificado($num_certificado);
         $nameForm = preg_split('/\s+/', $this->removeAccents(strtolower($nameForm)));

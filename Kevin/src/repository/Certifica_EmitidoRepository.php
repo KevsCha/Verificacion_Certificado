@@ -11,7 +11,6 @@ class Certifica_EmitidoRepository{
         $stmt = $this->pdo->query("SELECT * FROM certificados_emitidos");
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if ($result) {
-            echo "Datos encontrados";
             $certificados = [];
             foreach ($result as $row) {
                 $certificados[] = Certifica_Emitido::simpleCertificado($row['id'], $row['nombre'], $row['apellido'], $row['num_regis_certificado']);
