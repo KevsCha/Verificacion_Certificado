@@ -43,10 +43,8 @@ class ConsultorRepository{
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$row){
+        if (!$row)
             return null;
-            //throw new NotFoundException("Consultor con email ".$email." no encontrado");
-        }
         return new Consultores($row['id'], $row['nombre'], $row['apellido'], $row['empresa'], $row['email']);
     }
     public function findIdByEmail($email){

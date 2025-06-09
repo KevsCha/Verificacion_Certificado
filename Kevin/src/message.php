@@ -1,6 +1,6 @@
 <?php
 return [
-    'EmailSend_OK' => 'Correo enviado correctamente a ',
+    'EmailSend_OK' => 'Correo enviado correctamente a {{:email}}',
     'EmailSend_KO' => 'Error al enviar el correo: ',
     'State_OK' => 'Estado del Certitificado, tu certificado está activo y válido',
     'EmailHtml_OK' => 'Confirmamos que <strong>{{:name}}</strong> posee un certificado con número <strong>{{:num_regis}}</strong> activo y válido otorgado por Vaelsys.<br><br>Gracias por su consulta.',

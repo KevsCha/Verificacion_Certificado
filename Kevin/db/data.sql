@@ -18,7 +18,9 @@ CREATE TABLE certificados_emitidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
-    num_regis_certificado INT NOT NULL UNIQUE
+    num_regis_certificado INT NOT NULL UNIQUE,
+    fecha_emision DATE DEFAULT CURRENT_TIMESTAMP,
+    fecha_vencimiento DATE NOT NULL
 );
 
 -- Tabla de Consultas

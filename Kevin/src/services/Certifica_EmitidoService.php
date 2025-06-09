@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../exceptions/ValidationException.php';
+require_once __DIR__ . '/../exceptions/ExpiredException.php';
 class Certifica_EmitidoService{
     private $repository;
     public function __construct($repository){
@@ -14,7 +15,9 @@ class Certifica_EmitidoService{
         $last_nameDDBB = $this->removeAccents(strtolower($certificadoData->getLastName()));
         
         if($nameForm[0] != $nameDDBB || $nameForm[1] != $last_nameDDBB)
-            throw new ValidationException("Los datos del certificado no coinciden con los de la base de datos. Por favor, verifique el nombre, apellido y número de certificado.");
+            throw new ValidationException("Los datos del certificado no coinciden. Por favor, verifique el nombre, apellido y número de certificado.");
+        if (date('Y-m-d') > $certificadoData->getFechaValidez())
+            throw new ExpiredException("El certificado ha caducado. Por favor, verifique la fecha de validez del certificado.");
         return true;
     }
     private function removeAccents($str){

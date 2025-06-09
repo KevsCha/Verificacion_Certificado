@@ -1,6 +1,7 @@
 <?php
 require_once '../vendor/autoload.php';
 
+
 use PHPMailer\PHPMailer\PHPMailer;
 class SendEmailHostinger{
     private $email;
@@ -36,7 +37,8 @@ class SendEmailHostinger{
             $this->mailer->Body = $htmlContent;
             $this->mailer->AltBody = $textContent;
             $this->mailer->send();
-            echo "Correo enviado correctamente a $toMail";
+            $message = require './message.php';
+            echo  str_replace('{{:email}}', $toMail, $message['EmailSend_OK']);;
             return true;
         }catch(Exception $e){
             echo "Error al enviar el correo: " . $e->getMessage();
