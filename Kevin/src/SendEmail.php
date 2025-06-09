@@ -76,7 +76,7 @@ class SendEmail{
 
             $this->mailer->isHTML(true);
             $this->mailer->Subject = $subject;
-            $this->mailer->Body = $textContent;
+            $this->mailer->Body = $htmlContent;
             $this->mailer->AltBody = $textContent;
 
 

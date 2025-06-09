@@ -8,8 +8,7 @@ class ConsultorService
     }
     //! Colocar Exception para el caso de que no se encuentre el consultor
     public function validationData($nameForm, $email, $empresa){
-        //TODO: Lanza error si el consultor no existe
-        //TODO: Validar que el email sea correcto
+
         $consultorData = $this->repository->findByEmail($email);
         $nameForm = preg_split('/\s+/', $this->removeAccents(strtolower($nameForm)));
         
@@ -22,7 +21,7 @@ class ConsultorService
     }
     public function saveConsultor($name, $empresa, $email){
         $consultorDDBB = $this->repository->findByEmail($email);
-        echo $consultorDDBB." resultado de la busqueda <br>";
+        //echo $consultorDDBB." resultado de la busqueda <br>";
 
         if  (!$consultorDDBB) {
             $name = $this->removeAccents(strtolower($name));

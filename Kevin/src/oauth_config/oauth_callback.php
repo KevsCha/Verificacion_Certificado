@@ -32,9 +32,9 @@ if (isset($_GET['code'])){
             exit("No se recibió un refresh token. Asegúrate de autorizar completamente la app o borra el acceso desde tu cuenta de Google.");
         }
 
-        echo "Access Token: " . $token->getToken() . "\n";
-        echo "Refresh Token: " . $token->getRefreshToken() . "\n";
-        echo "Expires: " . date('Y-m-d H:i:s', $token->getExpires()) . "\n";
+        //echo "Access Token: " . $token->getToken() . "\n";
+        //echo "Refresh Token: " . $token->getRefreshToken() . "\n";
+        //echo "Expires: " . date('Y-m-d H:i:s', $token->getExpires()) . "\n";
 
         $data = [
             'access_token' => $token->getToken(),
