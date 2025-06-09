@@ -27,7 +27,7 @@ class Certifica_EmitidoRepository{
         if (!$row) {
             throw new NotFoundException("Certificado con número de registro $num_regis_certificado no encontrado");
         }
-        return Certifica_Emitido::simpleCertificado($row['id'], $row['nombre'], $row['apellido'], $row['num_regis_certificado']);
+        return new Certifica_Emitido($row['id'], $row['nombre'], $row['apellido'], $row['num_regis_certificado'], $row['fecha_emision'], $row['fecha_validez']);
     }
     public function findIdByNumRegisCertificado($num_regis_certificado){
         $stmt = $this->pdo->prepare("SELECT id FROM certificados_emitidos WHERE num_regis_certificado = :num_regis_certificado");

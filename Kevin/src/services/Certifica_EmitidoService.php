@@ -13,10 +13,16 @@ class Certifica_EmitidoService{
         $nameDDBB = $this->removeAccents(strtolower($certificadoData->getName()));
         $last_nameDDBB = $this->removeAccents(strtolower($certificadoData->getLastName()));
         
-        if($nameForm[0] != $nameDDBB || $nameForm[1] != $last_nameDDBB)
+        if($nameForm[0] != $nameDDBB || $nameForm[1] != $last_nameDDBB){
+            echo "entrando a la validación de datos";
             throw new ValidationException("Los datos del certificado no coinciden. Por favor, verifique el nombre, apellido y número de certificado.");
-        if (date('Y-m-d') > $certificadoData->getFechaValidez())
+        }
+        if (date('Y-m-d') > $certificadoData->getFechaValidez()){
+            echo "Fecha de validez: " . $certificadoData->getFechaValidez();
+            echo "Fecha actual: " . date('Y-m-d');
+            echo date('Y-m-d') > $certificadoData->getFechaValidez();
             throw new ExpiredException("El certificado ha caducado. Por favor, verifique la fecha de validez del certificado.");
+        }
         return true;
     }
     private function removeAccents($str){

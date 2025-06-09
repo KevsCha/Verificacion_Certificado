@@ -37,8 +37,7 @@ class SendEmailHostinger{
             $this->mailer->Body = $htmlContent;
             $this->mailer->AltBody = $textContent;
             $this->mailer->send();
-            $message = require './message.php';
-            echo  str_replace('{{:email}}', $toMail, $message['EmailSend_OK']);;
+            echo  'Correo enviado correctamente a ' . $toMail ;
             return true;
         }catch(Exception $e){
             echo "Error al enviar el correo: " . $e->getMessage();

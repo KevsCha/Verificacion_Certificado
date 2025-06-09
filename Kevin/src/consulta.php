@@ -63,9 +63,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $repoHistorico = new Historial_ConsultasRepository($pdo);
 
         $serviceHistorico = new Historial_ConsultasService($repoHistorico, $repoConsultor, $repoCertificado);    
-        $serviceHistorico->saveConsulta($inpConsul_email, $inpCert_numberReg);
+        //$serviceHistorico->saveConsulta($inpConsul_email, $inpCert_numberReg);
     }catch (ExpiredException $e) {
-        
+        echo "Error 1";
         $stateMessage = $messageFile['State_Lapsed'];
         $messageContent = str_replace("{{:name}}", $inpCert_name, $messageFile['EmailHtml_Lapsed']);
         $textContent = str_replace("{{:name}}", $inpCert_name, $messageFile['EmailTxt_Lapsed']);
@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $htmlContent, 
             $textContent);
     }catch (NotFoundException $e) {
-        
+        echo "Error 2";
         $mailClass = new SendEmailHostinger();
 
         $stateMessage = $messageFile['State_KO'];
