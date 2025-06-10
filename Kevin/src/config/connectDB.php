@@ -1,5 +1,5 @@
 <?php
-$host = 'localhost';
+$host = '127.0.0.1';
 $db   = 'db_vc';
 $user = 'root';
 $pass = 'contrasena';
@@ -18,3 +18,5 @@ try {
 } catch (\PDOException $e) {
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
+// CONEXIÓN A LA BASE DE DATOS EXITOS DE XAMPP
+// Puedes usar $pdo para realizar consultas a la base de datos

@@ -20,21 +20,24 @@ class ConsultorService
     }
     public function saveConsultor($name, $empresa, $email){
         $consultorDDBB = $this->repository->findByEmail($email);
-        //echo $consultorDDBB." resultado de la busqueda <br>";
 
         if  (!$consultorDDBB) {
             $name = $this->removeAccents(strtolower($name));
             $name = preg_split('/\s+/', $name);
             $consultorDDBB = new Consultores(null, $name[0], $name[1], $empresa, $email);
             $this->repository->save($consultorDDBB);
-            echo "<br>Consultor no encontrado, creando nuevo consultor: " . $consultorDDBB."<br>";
-        }else if ($consultorDDBB->getEmpresa() != $empresa) {
-            echo "<br>Consultor encontrado, actualizando empresa: " . $consultorDDBB."<br>";
-            $consultorDDBB->setEmpresa($empresa);
-            $this->repository->update($consultorDDBB);
+            //echo "<br>Consultor no encontrado, creando nuevo consultor: " . $consultorDDBB."<br>";
         }
         return true;
-
+    }
+    public function generateCodeConsultor($name, $last_name){
+        $name = $this->removeAccents(strtolower($name));
+        $last_name = $this->removeAccents(strtolower($last_name));
+        
+        $name = preg_split('/\s+/', $name);
+        $last_name = preg_split('/\s+/', $last_name);
+        $code = strtoupper(substr($name[0], 0, 2) . substr($name[1], 0, 2));
+        return $code;
     }
     private function removeAccents($str){
         $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);

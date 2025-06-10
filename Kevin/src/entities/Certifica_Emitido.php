@@ -15,7 +15,9 @@ class Certifica_Emitido extends Persona{
     public static function simpleCertificado($id, $name, $last_name, $num_certificado){
         return new self($id, $name, $last_name, $num_certificado);
     }
-    
+    // public static function simpleCertificadoWithDates($id, $name, $last_name, $num_certificado, $fecha_validez){
+    //     return new self($id, $name, $last_name, $num_certificado, , $fecha_validez);
+    // }
     public static function fullCertificado($id, $name, $last_name, $num_certificado, $fecha_emision, $fecha_validez){
         return new self($id, $name, $last_name, $num_certificado, $fecha_emision, $fecha_validez);
     }

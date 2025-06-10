@@ -1,7 +1,6 @@
 <?php
 require_once '../vendor/autoload.php';
 
-
 use PHPMailer\PHPMailer\PHPMailer;
 class SendEmailHostinger{
     private $email;
@@ -11,6 +10,10 @@ class SendEmailHostinger{
 
     public function __construct() {
         $this->email = 'certificaciones@pipote.es';
+        // Cambia la contraseña por la que tengas configurada en tu cuenta de Hostinger
+        // Asegúrate de que la contraseña sea correcta y esté actualizada
+        // ESTA INFORMACION ES SENSIBLE, NO DEBES COMPARTIRLA PUBLICAMENTE
+        // Puedes usar variables de entorno o un archivo de configuración para manejar contraseñas sensibles
         $this->password = 'Arboleda18_';
         $this->mailer = new PHPMailer(true);
         $this->setUpEmail();

@@ -11,7 +11,6 @@ class Historial_ConsultasService{
     }
 
     public function saveConsulta($consultor_email, $certificado_num_regis){
-
         $idConsultor = $this->consultorRepository->findIdByEmail($consultor_email);
         $idCertificado = $this->certificadoRepository->findIdByNumRegisCertificado($certificado_num_regis);
         $certficadoValidez = $this->certificadoRepository->findById($idCertificado);
@@ -23,8 +22,6 @@ class Historial_ConsultasService{
         }
         else
             $resultado = $certficadoValidez->getFechaValidez() > date('Y-m-d') ? 'valido' : 'caducado';
-        //echo "<br> Certificado: $resultado <br>";
-        echo date('Y-m-d H:i:s') . "<br>";
         $historico = new Historial_Consultas(null, $idConsultor, $idCertificado, date('Y-m-d H:i:s'), $resultado);
         $this->repository->save($historico);
         return true;

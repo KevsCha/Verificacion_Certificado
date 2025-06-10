@@ -11,6 +11,7 @@ require_once("../src/services/Historial_ConsultasService.php");
 require_once("./exceptions/ValidationException.php");
 require_once("./exceptions/NotFoundException.php");
 require_once("./exceptions/ExpiredException.php");
+require_once("./services/EmailResponseHandler.php");
 
 require_once("./SendEmail.php");
 require_once("./SendEmailHostinger.php");
@@ -18,6 +19,10 @@ require_once("./config/getToken.php");
 
 require ('../vendor/autoload.php');
 use PHPMailer\PHPMailer\Exception;
+
+$repoCertificado = null;
+$repoConsultor = null;
+$emailHandler = null;
 
 // Verifica si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -29,13 +34,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inpCert_name = $_POST['name'];
     $inpCert_numberReg = $_POST['certificado'];
     
-
     // Validación de los datos del formulario
     try {
         $messageFile = require './message.php';
         
         // Instanciar las clases de repositorio y servicio
         $repoCertificado = new Certifica_EmitidoRepository($pdo);
+        $repoConsultor = new ConsultorRepository($pdo);
+        $emailHandler = new EmailResponseHandler($messageFile, $pdo, $repoConsultor, $repoCertificado);
+        
         $serviceCertificado = new Certifica_EmitidoService($repoCertificado);
         if ($serviceCertificado->validationData($inpCert_name, $inpCert_numberReg)){
             $stateMessage = $messageFile['State_OK'];
@@ -44,62 +51,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $htmlContent = str_replace("{{mensaje}}", $messageContent, file_get_contents('./view/plantillaEmail.html'));
         }
         
-        $repoConsultor = new ConsultorRepository($pdo);
         $serviceConsultor = new ConsultorService($repoConsultor);
-        //$serviceConsultor->saveConsultor($inpConsul_name, $inpConsul_empresa, $inpConsul_email);
+        $serviceConsultor->saveConsultor($inpConsul_name, $inpConsul_empresa, $inpConsul_email);
         
         // Proceder a enviar el correo
-        $mailClass = new SendEmailHostinger();
-
-        $mailClass->sendCertificateEmail(
-            $inpConsul_email,
-            $inpConsul_name,
-            $stateMessage,
-            $htmlContent,
-            $textContent    
-        );
-        
-        // Guardar la consulta en el historial
-        $repoHistorico = new Historial_ConsultasRepository($pdo);
-
-        $serviceHistorico = new Historial_ConsultasService($repoHistorico, $repoConsultor, $repoCertificado);    
-        //$serviceHistorico->saveConsulta($inpConsul_email, $inpCert_numberReg);
+        $emailHandler->sendFound($inpCert_name, $inpCert_numberReg, $inpConsul_email, $inpConsul_name);
     }catch (ExpiredException $e) {
-        echo "Error 1";
-        $stateMessage = $messageFile['State_Lapsed'];
-        $messageContent = str_replace("{{:name}}", $inpCert_name, $messageFile['EmailHtml_Lapsed']);
-        $textContent = str_replace("{{:name}}", $inpCert_name, $messageFile['EmailTxt_Lapsed']);
-        $htmlContent = str_replace("{{mensaje}}", $messageContent, file_get_contents('./view/plantillaEmail.html'));
-        $mailClass = new SendEmailHostinger();
-        
-        $mailClass->sendCertificateEmail(
-            $inpConsul_email, 
-            $inpConsul_name, 
-            $stateMessage, 
-            $htmlContent, 
-            $textContent);
+        $emailHandler->sendExpired($inpCert_name, $inpCert_numberReg, $inpConsul_email, $inpConsul_name);
     }catch (NotFoundException $e) {
-        echo "Error 2";
-        $mailClass = new SendEmailHostinger();
-
-        $stateMessage = $messageFile['State_KO'];
-        $messageContent = str_replace(["{{:name}}","{{:num_regis}}"], [$inpCert_name, $inpCert_numberReg], $messageFile['EmailHtml_KO']); 
-        $textContent =  str_replace(["{{:name}}","{{:num_regis}}"], [$inpCert_name, $inpCert_numberReg], $messageFile['EmailTxt_KO']); 
-        $htmlContent = str_replace("{{mensaje}}", $messageContent, file_get_contents('./view/plantillaEmail.html'));
-
-        $mailClass->sendCertificateEmail(
-            $inpConsul_email, 
-            $inpConsul_name, 
-            $stateMessage, 
-            $htmlContent,
-            $textContent
-        );
+        $emailHandler->sendNotFound($inpCert_name, $inpCert_numberReg, $inpConsul_email, $inpConsul_name);
     }catch (ValidationException $e) {
-        echo "Error de validación: " . $e->getMessage();
+        echo $e->getMessage();
     }catch (PDOException $e) {
         die("Error de conexión: " . $e->getMessage());
     }catch (Exception $e) {
         die("Error: " . $e->getMessage());
     }
 }
- 
